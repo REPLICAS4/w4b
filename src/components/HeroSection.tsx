@@ -61,12 +61,10 @@ const HeroSection = () => {
             READ THE MANIFESTO
           </a>
           <a
-            href="https://github.com/Conway-Research/automaton"
-            target="_blank"
-            rel="noopener noreferrer"
+            href="/predictmarket"
             className="font-mono text-sm tracking-wider px-8 py-3 border border-border text-muted-foreground hover:border-primary hover:text-primary transition-all duration-300"
           >
-            VIEW SOURCE →
+            PREDICTION MARKET →
           </a>
         </motion.div>
       </div>
