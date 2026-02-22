@@ -1,9 +1,14 @@
+import { useState } from "react";
 import { motion } from "framer-motion";
 import heroPattern from "@/assets/hero-pattern.jpg";
 import ParticleCanvas from "./ParticleCanvas";
+import WaitlistModal from "./WaitlistModal";
 
 const HeroSection = () => {
+  const [waitlistOpen, setWaitlistOpen] = useState(false);
   return (
+    <>
+    <WaitlistModal open={waitlistOpen} onClose={() => setWaitlistOpen(false)} />
     <section className="relative min-h-screen flex flex-col items-center justify-center overflow-hidden">
       {/* Background */}
       <div className="absolute inset-0 z-0">
@@ -54,12 +59,12 @@ const HeroSection = () => {
           transition={{ duration: 1, delay: 1 }}
           className="mt-12 flex flex-col sm:flex-row items-center justify-center gap-4"
         >
-          <a
-            href="#manifesto"
+          <button
+            onClick={() => setWaitlistOpen(true)}
             className="font-mono text-sm tracking-wider px-8 py-3 border border-primary text-primary hover:bg-primary hover:text-primary-foreground transition-all duration-300 border-glow"
           >
-            READ THE MANIFESTO
-          </a>
+            TRY NOW YOUR REPLICAS →
+          </button>
           <a
             href="/predictmarket"
             className="font-mono text-sm tracking-wider px-8 py-3 border border-border text-muted-foreground hover:border-primary hover:text-primary transition-all duration-300"
@@ -79,6 +84,7 @@ const HeroSection = () => {
         <div className="w-px h-16 bg-gradient-to-b from-transparent via-primary to-transparent animate-pulse-glow" />
       </motion.div>
     </section>
+    </>
   );
 };
 
