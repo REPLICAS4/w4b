@@ -36,7 +36,7 @@ const HeroSection = () => {
           className="font-display text-5xl md:text-7xl lg:text-8xl font-black tracking-tight text-text-bright text-glow leading-[0.9]"
         >
           Forge Your Replicas
-          <span className="block text-primary mt-2">Web 4.0 on BNB</span>
+          <span className="block text-primary mt-2">Web 4.0</span>
         </motion.h1>
 
         <motion.p
