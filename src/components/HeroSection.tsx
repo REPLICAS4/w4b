@@ -26,25 +26,26 @@ const HeroSection = () => {
           transition={{ duration: 1 }}
           className="font-mono text-sm tracking-[0.3em] uppercase text-primary mb-8"
         >
-          BNB Automaton
+          REPLICAS
         </motion.p>
 
         <motion.h1
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1, delay: 0.3 }}
-          className="font-display text-6xl md:text-8xl lg:text-9xl font-black tracking-tight text-text-bright text-glow leading-[0.9]"
+          className="font-display text-5xl md:text-7xl lg:text-8xl font-black tracking-tight text-text-bright text-glow leading-[0.9]"
         >
-          WEB 4.0
+          Forge Your Replicas
+          <span className="block text-primary mt-2">Web 4.0 on BNB</span>
         </motion.h1>
 
         <motion.p
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 1, delay: 0.6 }}
-          className="mt-8 font-display italic text-xl md:text-2xl text-foreground max-w-2xl mx-auto leading-relaxed"
+          className="mt-8 font-mono text-lg md:text-xl tracking-wider text-muted-foreground"
         >
-          As AI agents claim sovereignty on BNB Chain, a new internet is born — cheaper, faster, unstoppable.
+          Replicate. Evolve. Earn.
         </motion.p>
 
         <motion.div
