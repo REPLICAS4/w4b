@@ -41,6 +41,14 @@ const Navbar = () => {
                 {link.label.toUpperCase()}
               </Link>
             ))}
+            <a
+              href="https://github.com/REPLICAS4/w4b"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="font-mono text-xs tracking-wider text-muted-foreground hover:text-primary transition-colors duration-200"
+            >
+              OPEN-SOURCE
+            </a>
             <button
               onClick={() => setWaitlistOpen(true)}
               className="font-mono text-xs tracking-wider px-4 py-1.5 border border-primary text-primary hover:bg-primary hover:text-primary-foreground transition-all duration-300"
