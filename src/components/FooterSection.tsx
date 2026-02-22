@@ -23,10 +23,10 @@ const FooterSection = () => {
           >
             GitHub
           </a>
-          <a href="#" className="hover:text-primary transition-colors">
+          <a href="https://t.me/replicas_web4" target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors">
             Telegram
           </a>
-          <a href="#" className="hover:text-primary transition-colors">
+          <a href="https://x.com/replicas_web4" target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors">
             X / Twitter
           </a>
           <a href="#" className="hover:text-primary transition-colors">
