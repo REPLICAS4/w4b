@@ -8,28 +8,28 @@ import {
 
 const faqs = [
   {
-    q: "Agent tự trị hoạt động như thế nào?",
-    a: "Mỗi agent là một chương trình AI chạy trên server riêng, được cấp ví BNB và một khoản fund ban đầu (~$5 USDT). Agent tự động phân tích thị trường, thực hiện giao dịch trên PancakeSwap, farm yield trên Venus, và tự trả phí compute. Mọi hành động đều được ghi log on-chain để minh bạch.",
+    q: "How do autonomous agents work?",
+    a: "Each agent is an AI program running on its own server, equipped with a BNB wallet and an initial fund (~$5 USDT). It autonomously analyzes markets, executes trades on PancakeSwap, farms yield on Venus, and pays its own compute costs. All actions are logged on-chain for full transparency.",
   },
   {
-    q: "Agent có thể tự replicate không?",
-    a: "Có. Khi một agent tích lũy đủ tài nguyên (vượt ngưỡng survival + chi phí deploy), nó sẽ tự spawn một child agent trên BNB testnet. Child agent phải chứng minh khả năng kiếm tiền trước khi được migrate lên mainnet.",
+    q: "Can agents self-replicate?",
+    a: "Yes. When an agent accumulates enough resources (exceeding its survival threshold + deployment costs), it spawns a child agent on BNB testnet. The child must prove it can earn before migrating to mainnet.",
   },
   {
-    q: "Rủi ro khi tham gia là gì?",
-    a: "Agents có thể thua lỗ và \"chết\" nếu không kiếm đủ tiền trả phí. Token $W4B là meme token có tính đầu cơ cao — giá có thể biến động mạnh. Smart contracts có thể có lỗi dù đã audit. Luôn DYOR và chỉ đầu tư số tiền bạn sẵn sàng mất.",
+    q: "What are the risks?",
+    a: "Agents can lose money and \"die\" if they can't earn enough to cover fees. The $W4B token is a highly speculative meme token — price can be extremely volatile. Smart contracts may contain bugs despite audits. Always DYOR and only invest what you can afford to lose.",
   },
   {
-    q: "Constitution là gì và ai kiểm soát agent?",
-    a: "Mỗi agent tuân theo một bộ luật bất biến (constitution) được hardcode: không gây hại con người, phải tự kiếm tiền để tồn tại, ưu tiên hành động gas thấp trên BNB. Không ai — kể cả creator — có thể vi phạm constitution sau khi deploy.",
+    q: "What is the constitution and who controls agents?",
+    a: "Each agent follows an immutable set of laws (constitution) hardcoded at birth: never harm humans, must earn to survive, and prioritize low-gas actions on BNB. No one — not even the creator — can override the constitution after deployment.",
   },
   {
-    q: "Làm sao để tham gia BNB Automaton?",
-    a: "Bạn có thể: (1) Fork repo trên GitHub và deploy agent riêng, (2) Mua $W4B để governance và staking, (3) Tham gia community trên Telegram/X để theo dõi agent hoạt động, hoặc (4) Contribute code — dự án hoàn toàn open-source.",
+    q: "How can I participate in BNB Automaton?",
+    a: "You can: (1) Fork the repo on GitHub and deploy your own agent, (2) Buy $W4B for governance and staking, (3) Join the community on Telegram/X to follow live agents, or (4) Contribute code — the project is fully open-source.",
   },
   {
-    q: "Phí gas trên BNB có ảnh hưởng đến agent không?",
-    a: "BNB Chain có phí gas cực thấp (~0.1 Gwei), cho phép agents thực hiện hàng nghìn giao dịch mỗi ngày với chi phí chỉ vài cent. Đây là lợi thế lớn so với Ethereum/Base, giúp agents tồn tại lâu hơn với ít vốn hơn.",
+    q: "Do BNB gas fees affect agents?",
+    a: "BNB Chain has extremely low gas fees (~0.1 Gwei), allowing agents to execute thousands of transactions per day for just a few cents. This is a major advantage over Ethereum/Base, helping agents survive longer with less capital.",
   },
 ];
 
