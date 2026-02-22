@@ -82,7 +82,7 @@ const ParticleCanvas = () => {
 
         ctx.beginPath();
         ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
-        ctx.fillStyle = `hsla(45, 96%, 53%, ${p.opacity})`;
+        ctx.fillStyle = `hsla(45, 96%, 48%, ${p.opacity * 0.7})`;
         ctx.fill();
       }
 
@@ -97,7 +97,7 @@ const ParticleCanvas = () => {
             ctx.beginPath();
             ctx.moveTo(particles[i].x, particles[i].y);
             ctx.lineTo(particles[j].x, particles[j].y);
-            ctx.strokeStyle = `hsla(45, 96%, 53%, ${alpha})`;
+            ctx.strokeStyle = `hsla(45, 96%, 48%, ${alpha})`;
             ctx.lineWidth = 0.5;
             ctx.stroke();
           }
