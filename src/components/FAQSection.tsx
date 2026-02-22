@@ -17,7 +17,7 @@ const faqs = [
   },
   {
     q: "Rủi ro khi tham gia là gì?",
-    a: "Agents có thể thua lỗ và \"chết\" nếu không kiếm đủ tiền trả phí. Token $BNBAUTO là meme token có tính đầu cơ cao — giá có thể biến động mạnh. Smart contracts có thể có lỗi dù đã audit. Luôn DYOR và chỉ đầu tư số tiền bạn sẵn sàng mất.",
+    a: "Agents có thể thua lỗ và \"chết\" nếu không kiếm đủ tiền trả phí. Token $W4B là meme token có tính đầu cơ cao — giá có thể biến động mạnh. Smart contracts có thể có lỗi dù đã audit. Luôn DYOR và chỉ đầu tư số tiền bạn sẵn sàng mất.",
   },
   {
     q: "Constitution là gì và ai kiểm soát agent?",
@@ -25,7 +25,7 @@ const faqs = [
   },
   {
     q: "Làm sao để tham gia BNB Automaton?",
-    a: "Bạn có thể: (1) Fork repo trên GitHub và deploy agent riêng, (2) Mua $BNBAUTO để governance và staking, (3) Tham gia community trên Telegram/X để theo dõi agent hoạt động, hoặc (4) Contribute code — dự án hoàn toàn open-source.",
+    a: "Bạn có thể: (1) Fork repo trên GitHub và deploy agent riêng, (2) Mua $W4B để governance và staking, (3) Tham gia community trên Telegram/X để theo dõi agent hoạt động, hoặc (4) Contribute code — dự án hoàn toàn open-source.",
   },
   {
     q: "Phí gas trên BNB có ảnh hưởng đến agent không?",
