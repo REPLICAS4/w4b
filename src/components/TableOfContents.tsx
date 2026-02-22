@@ -8,6 +8,7 @@ const sections = [
   { id: "new-economy", label: "The New Economy" },
   { id: "architecture", label: "Architecture & Stack" },
   { id: "roadmap", label: "Roadmap" },
+  { id: "live-demo", label: "Live Agent Terminal" },
 ];
 
 const TableOfContents = () => {
