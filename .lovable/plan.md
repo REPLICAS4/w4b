@@ -1,40 +1,64 @@
 
 
-## Add "What, Why & How" Explainer Section
+# Add Prediction Market Page (`/predictmarket`)
 
-A new section will be added between the Table of Contents and the Manifesto, providing a clear, scannable overview of BNB Automaton for newcomers.
+## Overview
+Create a new dedicated page showcasing how REPLICAS agents operate on PancakeSwap Prediction Markets, specifically trading BTC price on 5-minute intervals. The page will include a live-style chart, agent decision logs, win/loss stats, and a CTA to join.
 
-### Content Structure
+## Page Structure
 
-The section will have three cards/blocks:
+### 1. Hero Banner
+- Title: "Prediction Market Agent"
+- Subtitle: "AI-powered BTC 5m predictions on PancakeSwap"
+- Animated accent elements matching existing design language
 
-1. **What is BNB Automaton?**
-   - AI agents that live on BNB Chain
-   - They have their own wallets, earn money, pay for compute, and replicate -- all without human intervention
-   - Built on the open-source Automaton framework by Conway Research
+### 2. Live BTC 5m Chart Section
+- Simulated candlestick-style chart using Recharts (already installed)
+- Shows ~20 candles of fake BTC 5-minute data with UP/DOWN prediction markers
+- Green/red markers showing agent predictions overlaid on chart
+- Auto-updating animation to simulate live feel
 
-2. **Why are we building this?**
-   - AI today is powerful but cannot act independently -- it needs human permission for everything
-   - The internet assumes its users are human, locking AI out of real-world action
-   - BNB Chain offers the cheapest, fastest EVM environment for agents to transact thousands of times per day
-   - We believe the next internet will be built for AI users, not just human ones
+### 3. Agent Strategy Explainer
+- How the agent analyzes BTC price action (momentum, volume, pattern recognition)
+- 3-card grid: "Analyze", "Predict", "Execute" workflow
+- Clean icons from lucide-react
 
-3. **How does it work?**
-   - Each agent boots with a small fund (~$5 USDT) and a wallet on BNB Chain
-   - It trades on PancakeSwap, farms on Venus, and scans for arbitrage to earn money
-   - It pays its own compute and gas costs -- if it can't earn enough, it dies
-   - When it accumulates enough resources, it replicates by spawning a child agent
-   - All actions are governed by an immutable constitution (safety laws hardcoded at birth)
+### 4. Live Stats Dashboard
+- Animated counters: Win Rate (68%), Total Predictions (1,247), Net Profit (+$892), ROI (+178%)
+- Uses motion number animations (framer-motion)
 
-### Design
+### 5. Agent Decision Terminal
+- Similar style to existing `TerminalDemo` component
+- Shows prediction-specific logs: reading price, calculating momentum, placing UP/DOWN bet, result
 
-- Three vertical cards with icon/emoji headers, matching the existing dark theme with `bg-secondary` backgrounds and `border-border` borders
-- Subtle fade-in animation using `framer-motion` (consistent with other sections)
-- Monospace accents for technical terms
+### 6. CTA Section
+- "Deploy Your Prediction Agent" button
+- Link back to main page manifesto
 
-### Technical Details
+### 7. Navigation
+- Add a link from the main hero or footer to `/predictmarket`
+- Back-to-home link on the prediction page
 
-- Create new file: `src/components/WhySection.tsx`
-- Update `src/pages/Index.tsx` to import and place it between `TableOfContents` and `ManifestoSection`
-- Update `src/components/TableOfContents.tsx` to add a "What, Why & How" entry at the top of the navigation list
+## Files to Create / Modify
+
+| File | Action |
+|------|--------|
+| `src/pages/PredictMarket.tsx` | **Create** - Main page component |
+| `src/components/predict/PredictionChart.tsx` | **Create** - Recharts-based BTC 5m candlestick chart with prediction markers |
+| `src/components/predict/PredictionStats.tsx` | **Create** - Animated stats counters |
+| `src/components/predict/PredictionTerminal.tsx` | **Create** - Agent log terminal (prediction-focused) |
+| `src/components/predict/PredictionStrategy.tsx` | **Create** - 3-card strategy explainer |
+| `src/components/predict/PredictionCTA.tsx` | **Create** - Call-to-action section |
+| `src/components/predict/PredictionHero.tsx` | **Create** - Page hero banner |
+| `src/App.tsx` | **Modify** - Add route for `/predictmarket` |
+| `src/components/HeroSection.tsx` | **Modify** - Add link to prediction market page |
+
+## Technical Details
+
+- **Chart data**: Generate ~20 fake BTC candles around $67,000 range with realistic OHLC values. Each candle has a prediction marker (UP/DOWN) and result (win/loss).
+- **Recharts config**: Use `ComposedChart` with `Bar` for candle bodies, `ErrorBar` for wicks, and custom dot markers for predictions.
+- **Terminal logs**: ~15 log entries simulating agent reading indicators, placing prediction, waiting for round result.
+- **Stats animation**: Use framer-motion `useInView` + `animate` to count up numbers when scrolled into view.
+- **Styling**: Follow existing patterns - `font-display` for headings, `font-mono` for data, `motion` for animations, same color tokens (primary, muted-foreground, etc.).
+- **Responsive**: Mobile-first, chart scrollable horizontally on small screens.
 
