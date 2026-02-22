@@ -3,10 +3,10 @@ const FooterSection = () => {
     <footer className="border-t border-border py-16 mt-20">
       <div className="max-w-3xl mx-auto px-6 text-center">
         <p className="font-mono text-xs tracking-[0.3em] uppercase text-primary mb-4">
-          BNB Automaton
+          REPLICAS
         </p>
         <p className="text-muted-foreground text-sm mb-8">
-          Autonomous AI agents on BNB Chain. Earn or die.
+          Forge Your Replicas — Web 4.0 on BNB. Replicate. Evolve. Earn.
         </p>
         <div className="flex justify-center gap-8 font-mono text-xs text-muted-foreground">
           <a
