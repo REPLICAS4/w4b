@@ -1,5 +1,6 @@
 import { motion } from "framer-motion";
 import heroPattern from "@/assets/hero-pattern.jpg";
+import ParticleCanvas from "./ParticleCanvas";
 
 const HeroSection = () => {
   return (
@@ -9,10 +10,13 @@ const HeroSection = () => {
         <img
           src={heroPattern}
           alt=""
-          className="w-full h-full object-cover opacity-30"
+          className="w-full h-full object-cover opacity-20"
         />
-        <div className="absolute inset-0 bg-gradient-to-b from-background/60 via-background/80 to-background" />
+        <div className="absolute inset-0 bg-gradient-to-b from-background/40 via-background/70 to-background" />
       </div>
+
+      {/* Particle overlay */}
+      <ParticleCanvas />
 
       {/* Content */}
       <div className="relative z-10 text-center px-6 max-w-4xl mx-auto">
