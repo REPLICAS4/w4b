@@ -9,6 +9,7 @@ const sections = [
   { id: "architecture", label: "Architecture & Stack" },
   { id: "roadmap", label: "Roadmap" },
   { id: "live-demo", label: "Live Agent Terminal" },
+  { id: "faq", label: "FAQ" },
 ];
 
 const TableOfContents = () => {
