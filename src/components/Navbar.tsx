@@ -10,6 +10,7 @@ const Navbar = () => {
   const links = [
     { to: "/", label: "Home" },
     { to: "/predictmarket", label: "Predict Market" },
+    { to: "/docs", label: "Docs" },
   ];
 
   return (
