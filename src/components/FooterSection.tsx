@@ -1,5 +1,11 @@
+import { useState } from "react";
+import WaitlistModal from "./WaitlistModal";
+
 const FooterSection = () => {
+  const [waitlistOpen, setWaitlistOpen] = useState(false);
   return (
+    <>
+    <WaitlistModal open={waitlistOpen} onClose={() => setWaitlistOpen(false)} />
     <footer className="border-t border-border py-16 mt-20">
       <div className="max-w-3xl mx-auto px-6 text-center">
         <p className="font-mono text-xs tracking-[0.3em] uppercase text-primary mb-4">
@@ -27,11 +33,18 @@ const FooterSection = () => {
             Docs
           </a>
         </div>
+        <button
+          onClick={() => setWaitlistOpen(true)}
+          className="mt-8 font-mono text-xs tracking-wider px-6 py-2 border border-primary/50 text-primary hover:bg-primary hover:text-primary-foreground transition-all duration-300"
+        >
+          JOIN WAITLIST
+        </button>
         <p className="mt-12 text-muted-foreground/50 text-xs">
           Built on BNB Smart Chain · Inspired by Conway Research
         </p>
       </div>
     </footer>
+    </>
   );
 };
 
