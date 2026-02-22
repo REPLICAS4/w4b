@@ -1,6 +1,7 @@
 import { motion } from "framer-motion";
 
 const sections = [
+  { id: "why", label: "What, Why & How" },
   { id: "genius", label: "A Genius That Can't Move" },
   { id: "setting-free", label: "Setting AI Free on BNB" },
   { id: "automaton", label: "The BNB Automaton" },
