@@ -1,3 +1,4 @@
+import Navbar from "@/components/Navbar";
 import PredictionHero from "@/components/predict/PredictionHero";
 import LivePriceTicker from "@/components/predict/LivePriceTicker";
 import PredictionChart from "@/components/predict/PredictionChart";
@@ -11,6 +12,7 @@ import FooterSection from "@/components/FooterSection";
 const PredictMarket = () => {
   return (
     <div className="min-h-screen bg-background">
+      <Navbar />
       <PredictionHero />
       <LivePriceTicker />
       <div className="w-full max-w-3xl mx-auto px-6 h-px bg-gradient-to-r from-transparent via-primary/30 to-transparent mt-10" />
