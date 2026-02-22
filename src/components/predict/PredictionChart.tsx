@@ -1,26 +1,13 @@
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
 import { motion } from "framer-motion";
-import {
-  ComposedChart,
-  Bar,
-  XAxis,
-  YAxis,
-  Tooltip,
-  ResponsiveContainer,
-  Cell,
-  Line,
-} from "recharts";
 
 interface CandleData {
   time: string;
-  timestamp: number;
   open: number;
   high: number;
   low: number;
   close: number;
   volume: number;
-  bottom: number;
-  body: number;
   isUp: boolean;
 }
 
@@ -31,74 +18,167 @@ const PAIRS = [
 
 const fetchKlines = async (symbol: string): Promise<CandleData[]> => {
   const res = await fetch(
-    `https://api.binance.com/api/v3/klines?symbol=${symbol}&interval=5m&limit=30`
+    `https://api.binance.com/api/v3/klines?symbol=${symbol}&interval=5m&limit=40`
   );
   const raw = await res.json();
-
   return raw.map((k: any[]) => {
     const open = parseFloat(k[1]);
     const high = parseFloat(k[2]);
     const low = parseFloat(k[3]);
     const close = parseFloat(k[4]);
     const volume = parseFloat(k[5]);
-    const isUp = close >= open;
     const date = new Date(k[0]);
     const time = `${String(date.getHours()).padStart(2, "0")}:${String(date.getMinutes()).padStart(2, "0")}`;
-
-    return {
-      time,
-      timestamp: k[0],
-      open,
-      high,
-      low,
-      close,
-      volume,
-      bottom: Math.min(open, close),
-      body: Math.abs(close - open) || 0.01,
-      isUp,
-    };
+    return { time, open, high, low, close, volume, isUp: close >= open };
   });
 };
 
-const CustomTooltip = ({ active, payload }: any) => {
-  if (!active || !payload?.[0]) return null;
-  const d = payload[0].payload as CandleData;
+const CHART_H = 360;
+const CHART_PAD = { top: 16, right: 50, bottom: 28, left: 10 };
+
+const CandlestickChart = ({ data, pair }: { data: CandleData[]; pair: string }) => {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [width, setWidth] = useState(700);
+  const [tooltip, setTooltip] = useState<{ x: number; y: number; d: CandleData } | null>(null);
+
+  useEffect(() => {
+    const el = containerRef.current;
+    if (!el) return;
+    const ro = new ResizeObserver(([e]) => setWidth(e.contentRect.width));
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, []);
+
+  if (!data.length) return null;
+
+  const allLow = Math.min(...data.map((d) => d.low));
+  const allHigh = Math.max(...data.map((d) => d.high));
+  const priceRange = allHigh - allLow || 1;
+  const padded = priceRange * 0.05;
+  const pMin = allLow - padded;
+  const pMax = allHigh + padded;
+  const pRange = pMax - pMin;
+
+  const plotW = width - CHART_PAD.left - CHART_PAD.right;
+  const plotH = CHART_H - CHART_PAD.top - CHART_PAD.bottom;
+  const candleW = Math.max(3, (plotW / data.length) * 0.6);
+  const gap = plotW / data.length;
+
+  const priceToY = (p: number) => CHART_PAD.top + plotH - ((p - pMin) / pRange) * plotH;
+
+  // Y-axis ticks
+  const tickCount = 6;
+  const ticks = Array.from({ length: tickCount }, (_, i) => pMin + (pRange * i) / (tickCount - 1));
+
+  const isBTC = pair.includes("BTC");
+  const formatPrice = (v: number) =>
+    isBTC ? `$${(v / 1000).toFixed(1)}k` : `$${v.toFixed(1)}`;
+
   return (
-    <div className="bg-card border border-border p-3 font-mono text-xs z-50">
-      <p className="text-muted-foreground mb-1">{d.time}</p>
-      <p>O: ${d.open.toLocaleString(undefined, { maximumFractionDigits: 2 })}</p>
-      <p>H: ${d.high.toLocaleString(undefined, { maximumFractionDigits: 2 })}</p>
-      <p>L: ${d.low.toLocaleString(undefined, { maximumFractionDigits: 2 })}</p>
-      <p>C: ${d.close.toLocaleString(undefined, { maximumFractionDigits: 2 })}</p>
-      <p className="text-muted-foreground mt-1">Vol: {d.volume.toFixed(2)}</p>
+    <div ref={containerRef} className="w-full overflow-x-auto">
+      <svg
+        width={Math.max(width, 600)}
+        height={CHART_H}
+        className="select-none"
+        onMouseLeave={() => setTooltip(null)}
+      >
+        {/* Grid lines */}
+        {ticks.map((t, i) => (
+          <g key={i}>
+            <line
+              x1={CHART_PAD.left}
+              x2={width - CHART_PAD.right}
+              y1={priceToY(t)}
+              y2={priceToY(t)}
+              stroke="hsl(220, 10%, 90%)"
+              strokeWidth={0.5}
+            />
+            <text
+              x={width - CHART_PAD.right + 6}
+              y={priceToY(t) + 3}
+              fill="hsl(220, 10%, 45%)"
+              fontSize={10}
+              fontFamily="var(--font-mono)"
+            >
+              {formatPrice(t)}
+            </text>
+          </g>
+        ))}
+
+        {/* Candles */}
+        {data.map((d, i) => {
+          const cx = CHART_PAD.left + gap * i + gap / 2;
+          const bodyTop = priceToY(Math.max(d.open, d.close));
+          const bodyBot = priceToY(Math.min(d.open, d.close));
+          const bodyH = Math.max(bodyBot - bodyTop, 1);
+          const color = d.isUp ? "hsl(45, 96%, 48%)" : "hsl(0, 84%, 60%)";
+
+          return (
+            <g
+              key={i}
+              onMouseEnter={(e) => setTooltip({ x: cx, y: bodyTop - 10, d })}
+              onMouseLeave={() => setTooltip(null)}
+              className="cursor-crosshair"
+            >
+              {/* Wick */}
+              <line
+                x1={cx}
+                x2={cx}
+                y1={priceToY(d.high)}
+                y2={priceToY(d.low)}
+                stroke={color}
+                strokeWidth={1}
+              />
+              {/* Body */}
+              <rect
+                x={cx - candleW / 2}
+                y={bodyTop}
+                width={candleW}
+                height={bodyH}
+                fill={color}
+                rx={1}
+              />
+            </g>
+          );
+        })}
+
+        {/* X-axis labels */}
+        {data.map((d, i) =>
+          i % Math.ceil(data.length / 8) === 0 ? (
+            <text
+              key={i}
+              x={CHART_PAD.left + gap * i + gap / 2}
+              y={CHART_H - 6}
+              fill="hsl(220, 10%, 45%)"
+              fontSize={10}
+              fontFamily="var(--font-mono)"
+              textAnchor="middle"
+            >
+              {d.time}
+            </text>
+          ) : null
+        )}
+
+        {/* Tooltip */}
+        {tooltip && (
+          <foreignObject
+            x={Math.min(tooltip.x + 10, width - 160)}
+            y={Math.max(tooltip.y - 80, 5)}
+            width={150}
+            height={100}
+            className="pointer-events-none"
+          >
+            <div className="bg-card border border-border p-2 font-mono text-[11px] shadow-lg">
+              <p className="text-muted-foreground">{tooltip.d.time}</p>
+              <p>O: ${tooltip.d.open.toLocaleString(undefined, { maximumFractionDigits: 2 })}</p>
+              <p>H: ${tooltip.d.high.toLocaleString(undefined, { maximumFractionDigits: 2 })}</p>
+              <p>L: ${tooltip.d.low.toLocaleString(undefined, { maximumFractionDigits: 2 })}</p>
+              <p>C: ${tooltip.d.close.toLocaleString(undefined, { maximumFractionDigits: 2 })}</p>
+            </div>
+          </foreignObject>
+        )}
+      </svg>
     </div>
-  );
-};
-
-// Custom candlestick shape
-const CandlestickShape = (props: any) => {
-  const { x, y, width, height, payload } = props;
-  if (!payload) return null;
-
-  const { open, close, high, low, isUp } = payload;
-  const color = isUp ? "hsl(45, 96%, 48%)" : "hsl(0, 84%, 60%)";
-
-  // We need to calculate wick positions relative to the bar
-  const yScale = height / Math.abs(close - open || 0.01);
-  const barCenter = x + width / 2;
-
-  return (
-    <g>
-      {/* Candle body */}
-      <rect
-        x={x}
-        y={y}
-        width={width}
-        height={Math.max(height, 1)}
-        fill={color}
-        opacity={0.9}
-      />
-    </g>
   );
 };
 
@@ -125,9 +205,6 @@ const PredictionChart = () => {
     return () => clearInterval(interval);
   }, [loadData]);
 
-  const minPrice = data.length ? Math.min(...data.map((d) => d.low)) * 0.9999 : 0;
-  const maxPrice = data.length ? Math.max(...data.map((d) => d.high)) * 1.0001 : 0;
-
   const lastCandle = data[data.length - 1];
   const prevCandle = data[data.length - 2];
   const priceChange = lastCandle && prevCandle ? lastCandle.close - prevCandle.close : 0;
@@ -149,8 +226,6 @@ const PredictionChart = () => {
             Real-time candlestick data from Binance
           </p>
         </div>
-
-        {/* Pair switcher */}
         <div className="flex gap-2">
           {PAIRS.map((pair) => (
             <button
@@ -169,7 +244,7 @@ const PredictionChart = () => {
       </div>
 
       <div className="border border-border bg-card overflow-hidden">
-        {/* Header bar */}
+        {/* Header */}
         <div className="flex items-center justify-between px-4 py-2.5 border-b border-border bg-secondary">
           <div className="flex items-center gap-3">
             <span className="font-mono text-sm font-bold text-text-bright">{activePair.label}</span>
@@ -178,13 +253,8 @@ const PredictionChart = () => {
                 <span className="font-mono text-sm text-text-bright">
                   ${lastCandle.close.toLocaleString(undefined, { maximumFractionDigits: 2 })}
                 </span>
-                <span
-                  className={`font-mono text-xs font-semibold ${
-                    priceChange >= 0 ? "text-primary" : "text-destructive"
-                  }`}
-                >
-                  {priceChange >= 0 ? "+" : ""}
-                  {priceChange.toFixed(2)}
+                <span className={`font-mono text-xs font-semibold ${priceChange >= 0 ? "text-primary" : "text-destructive"}`}>
+                  {priceChange >= 0 ? "+" : ""}{priceChange.toFixed(2)}
                 </span>
               </>
             )}
@@ -196,66 +266,20 @@ const PredictionChart = () => {
         </div>
 
         {/* Chart */}
-        <div className="p-4 overflow-x-auto">
+        <div className="p-2">
           {loading && data.length === 0 ? (
             <div className="h-[360px] flex items-center justify-center font-mono text-sm text-muted-foreground animate-pulse">
               Loading {activePair.label} chart...
             </div>
           ) : (
-            <div className="min-w-[600px]">
-              <ResponsiveContainer width="100%" height={360}>
-                <ComposedChart data={data} margin={{ top: 10, right: 10, bottom: 10, left: 10 }}>
-                  <XAxis
-                    dataKey="time"
-                    tick={{ fontSize: 10, fill: "hsl(220, 10%, 45%)", fontFamily: "var(--font-mono)" }}
-                    axisLine={{ stroke: "hsl(220, 10%, 90%)" }}
-                    tickLine={false}
-                    interval="preserveStartEnd"
-                  />
-                  <YAxis
-                    domain={[minPrice, maxPrice]}
-                    tick={{ fontSize: 10, fill: "hsl(220, 10%, 45%)", fontFamily: "var(--font-mono)" }}
-                    axisLine={false}
-                    tickLine={false}
-                    tickFormatter={(v) =>
-                      activePair.symbol === "BTCUSDT"
-                        ? `$${(v / 1000).toFixed(1)}k`
-                        : `$${v.toFixed(1)}`
-                    }
-                    width={55}
-                  />
-                  <Tooltip content={<CustomTooltip />} />
-                  <Bar
-                    dataKey="body"
-                    barSize={10}
-                    shape={<CandlestickShape />}
-                  >
-                    {data.map((d, i) => (
-                      <Cell
-                        key={i}
-                        fill={d.isUp ? "hsl(45, 96%, 48%)" : "hsl(0, 84%, 60%)"}
-                      />
-                    ))}
-                  </Bar>
-                  {/* Close price line */}
-                  <Line
-                    type="monotone"
-                    dataKey="close"
-                    stroke="hsl(45, 96%, 48%)"
-                    strokeWidth={1}
-                    dot={false}
-                    opacity={0.3}
-                  />
-                </ComposedChart>
-              </ResponsiveContainer>
-            </div>
+            <CandlestickChart data={data} pair={activePair.symbol} />
           )}
         </div>
 
         {/* Status bar */}
         <div className="flex items-center justify-between px-4 py-2 border-t border-border bg-secondary font-mono text-[10px] text-muted-foreground">
           <span>Binance Spot · {activePair.symbol}</span>
-          <span>{data.length} candles · 5m interval</span>
+          <span>{data.length} candles · 5m</span>
           <span>Updates every 15s</span>
         </div>
       </div>
