@@ -6,6 +6,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
 import PredictMarket from "./pages/PredictMarket";
 import Docs from "./pages/Docs";
+import CreateReplicas from "./pages/CreateReplicas";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -20,6 +21,7 @@ const App = () => (
           <Route path="/" element={<Index />} />
           <Route path="/predictmarket" element={<PredictMarket />} />
           <Route path="/docs" element={<Docs />} />
+          <Route path="/create-replicas" element={<CreateReplicas />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
