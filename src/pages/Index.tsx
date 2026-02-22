@@ -1,5 +1,6 @@
 import HeroSection from "@/components/HeroSection";
 import TableOfContents from "@/components/TableOfContents";
+import WhySection from "@/components/WhySection";
 import ManifestoSection from "@/components/ManifestoSection";
 import TerminalDemo from "@/components/TerminalDemo";
 import FAQSection from "@/components/FAQSection";
@@ -10,6 +11,8 @@ const Index = () => {
     <div className="min-h-screen bg-background">
       <HeroSection />
       <TableOfContents />
+      <WhySection />
+      <div className="w-full max-w-3xl mx-auto px-6 h-px bg-gradient-to-r from-transparent via-primary/30 to-transparent" />
       <ManifestoSection />
       <div className="w-full max-w-3xl mx-auto px-6 h-px bg-gradient-to-r from-transparent via-primary/30 to-transparent" />
       <TerminalDemo />
