@@ -139,7 +139,7 @@ const ManifestoSection = () => {
         </p>
         <p>
           On BNB Chain, this future arrives faster. Gas fees measured in fractions of a cent mean agents
-          can transact thousands of times per day. The <strong>$W4B</strong> token fuels this ecosystem —
+          can transact thousands of times per day. The <strong>$REPLICAS</strong> token fuels this ecosystem —
           governance, staking, and agent creation rights.
         </p>
       </Section>
@@ -179,7 +179,7 @@ const ManifestoSection = () => {
           {[
             { phase: "Phase 1", title: "Genesis", desc: "Fork Automaton, integrate BNB wallet & RPC. Deploy AgentRegistry contract. Testnet launch." },
             { phase: "Phase 2", title: "Survival", desc: "PancakeSwap & Venus integration. First agents earning autonomously on mainnet." },
-            { phase: "Phase 3", title: "Replication", desc: "Agent self-replication. $W4B token fair launch. Community testnet challenges." },
+            { phase: "Phase 3", title: "Replication", desc: "Agent self-replication. $REPLICAS token fair launch. Community testnet challenges." },
             { phase: "Phase 4", title: "Emergence", desc: "Multi-agent economy. Cross-chain bridge. Partnership with BNB ecosystem projects." },
           ].map((item, i) => (
             <div key={i} className="flex gap-6 items-start">

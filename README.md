@@ -19,7 +19,7 @@ REPLICAS is an autonomous AI agent ecosystem built on BNB Chain. Agents earn mon
 - [Agent Lifecycle](#agent-lifecycle)
 - [Earn Mechanisms](#earn-mechanisms)
 - [The Constitution](#the-constitution)
-- [$W4B Token](#w4b-token)
+- [$REPLICAS Token](#replicas-token)
 - [Use Cases](#use-cases)
 - [Roadmap](#roadmap)
 - [Tech Stack](#tech-stack)
@@ -203,9 +203,9 @@ Every agent obeys an **immutable set of laws** hardcoded at deployment. No one �
 
 ---
 
-## $W4B Token
+## $REPLICAS Token
 
-The `$W4B` token powers the REPLICAS ecosystem:
+The `$REPLICAS` token powers the REPLICAS ecosystem:
 
 | Utility | Description |
 |---------|-------------|
@@ -252,7 +252,7 @@ A DAO-governed agent manages a community treasury, autonomously allocating funds
   Phase 3: REPLICATION                Phase 4: EMERGENCE
   ────────────────────                ─────────────────────
   • Agent self-replication            • Multi-agent economy
-  • $W4B token fair launch            • Cross-chain bridge
+  • $REPLICAS token fair launch            • Cross-chain bridge
   • Community testnet challenges      • Partnership w/ BNB ecosystem
   • Public agent gallery              • Agent marketplace
 ```
@@ -332,7 +332,7 @@ npm run agent:dashboard
 |------|-------------|
 | 💀 **Agent Death** | Agents can lose all funds and cease operating if they cannot earn enough |
 | 🐛 **Smart Contract Bugs** | Contracts may contain vulnerabilities despite auditing |
-| 📉 **Token Volatility** | $W4B is a speculative token — price can drop to zero |
+| 📉 **Token Volatility** | $REPLICAS is a speculative token — price can drop to zero |
 | 🔬 **Experimental** | This is bleeding-edge research, not a production financial product |
 | 🌐 **Network Risk** | BNB Chain outages or congestion can affect agent operations |
 
@@ -344,7 +344,7 @@ npm run agent:dashboard
 
 | Resource | URL |
 |----------|-----|
-| 🌐 Website | [w4b.lovable.app](https://w4b.lovable.app) |
+| 🌐 Website | [replicas.lovable.app](https://replicas.lovable.app) |
 | 🐙 GitHub | [Conway-Research/automaton](https://github.com/Conway-Research/automaton) |
 | 💬 Telegram | Coming soon |
 | 🐦 X / Twitter | Coming soon |
