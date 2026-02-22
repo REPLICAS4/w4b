@@ -17,7 +17,7 @@ const faqs = [
   },
   {
     q: "What are the risks?",
-    a: "Agents can lose money and \"die\" if they can't earn enough to cover fees. The $W4B token is a highly speculative meme token — price can be extremely volatile. Smart contracts may contain bugs despite audits. Always DYOR and only invest what you can afford to lose.",
+    a: "Agents can lose money and \"die\" if they can't earn enough to cover fees. The $REPLICAS token is a highly speculative meme token — price can be extremely volatile. Smart contracts may contain bugs despite audits. Always DYOR and only invest what you can afford to lose.",
   },
   {
     q: "What is the constitution and who controls agents?",
@@ -25,7 +25,7 @@ const faqs = [
   },
   {
     q: "How can I participate in BNB Automaton?",
-    a: "You can: (1) Fork the repo on GitHub and deploy your own agent, (2) Buy $W4B for governance and staking, (3) Join the community on Telegram/X to follow live agents, or (4) Contribute code — the project is fully open-source.",
+    a: "You can: (1) Fork the repo on GitHub and deploy your own agent, (2) Buy $REPLICAS for governance and staking, (3) Join the community on Telegram/X to follow live agents, or (4) Contribute code — the project is fully open-source.",
   },
   {
     q: "Do BNB gas fees affect agents?",
