@@ -13,7 +13,7 @@ const sidebarSections = [
   { id: "prediction-market", label: "Prediction Market", icon: BarChart3 },
   { id: "tech-stack", label: "Tech Stack", icon: Cpu },
   { id: "smart-contracts", label: "Smart Contracts", icon: Terminal },
-  { id: "tokenomics", label: "$REPLICAS Token", icon: Zap },
+  { id: "tokenomics", label: "Tokenomics", icon: Zap },
   { id: "api-reference", label: "API Reference", icon: Globe },
   { id: "getting-started", label: "Getting Started", icon: ChevronRight },
 ];
@@ -577,19 +577,50 @@ Cost Breakdown (per day, ~1000 txns):
           <div className="w-full h-px bg-gradient-to-r from-transparent via-primary/30 to-transparent my-16" />
 
           {/* TOKENOMICS */}
-          <SectionHeading id="tokenomics" title="$REPLICAS Token" subtitle="Utility token powering the ecosystem" />
+          <SectionHeading id="tokenomics" title="Tokenomics" subtitle="100% Fair Launch — No VC, No Presale, No Team Allocation" />
           <div className="prose-editorial text-foreground space-y-4">
+            <div className="p-6 border border-primary/30 bg-primary/5 my-6">
+              <p className="font-mono text-xs text-primary tracking-wider uppercase mb-3">🚀 Fair Launch Principles</p>
+              <p className="text-sm text-foreground mb-3">
+                <strong>$REPLICAS</strong> launched with <strong>100% fair distribution</strong>. No venture capital rounds. 
+                No private sales. No team tokens. No insider allocations. Every single token was made available to 
+                the public at the same time, at the same price.
+              </p>
+              <div className="space-y-2 text-sm text-muted-foreground">
+                <p>✅ No presale or seed round</p>
+                <p>✅ No team/founder allocation</p>
+                <p>✅ No vesting schedules (nothing hidden)</p>
+                <p>✅ Liquidity locked at launch</p>
+                <p>✅ Contract renounced — no admin keys</p>
+              </div>
+            </div>
+
+            <div className="p-5 border border-border bg-card my-8">
+              <p className="font-mono text-xs text-primary uppercase tracking-wider mb-4">Token Info</p>
+              <InfoCard label="Token Name" value="$REPLICAS" />
+              <InfoCard label="Chain" value="BNB Smart Chain (BEP-20)" />
+              <InfoCard label="Launch Type" value="100% Fair Launch" />
+              <InfoCard label="Total Supply" value="1,000,000,000" />
+              <InfoCard label="Team Allocation" value="0%" />
+              <InfoCard label="VC / Presale" value="None" />
+              <InfoCard label="Liquidity" value="Locked" />
+              <InfoCard label="Contract" value="Renounced" />
+            </div>
+
+            <h3 className="font-display text-xl text-text-bright mt-10 mb-4">Token Utilities</h3>
             <p>
-              The <strong>$REPLICAS</strong> token is the native utility token of the REPLICAS ecosystem. 
-              It serves four primary functions:
+              $REPLICAS isn't just a meme — it's the <strong>fuel of the autonomous agent economy</strong>. 
+              Every major action in the ecosystem requires or rewards $REPLICAS:
             </p>
 
             <div className="grid sm:grid-cols-2 gap-4 my-8">
               {[
-                { icon: "🗳️", title: "Governance", desc: "Vote on protocol upgrades, constitution amendments, and parameter changes. 1 token = 1 vote." },
-                { icon: "📈", title: "Staking", desc: "Stake $REPLICAS to earn a share of agent-generated revenue. Revenue is distributed proportionally to stakers." },
-                { icon: "🤖", title: "Agent Creation", desc: "Required to deploy new agents on mainnet. Creates a natural demand sink as the ecosystem grows." },
-                { icon: "🔥", title: "Burn Mechanism", desc: "A portion of agent earnings is used to buy and burn $REPLICAS, creating deflationary pressure." },
+                { icon: "🤖", title: "Agent Deployment", desc: "Deploying a new autonomous agent on mainnet requires burning $REPLICAS. More agents = more tokens burned = deflationary pressure." },
+                { icon: "🗳️", title: "Governance", desc: "Hold $REPLICAS to vote on protocol upgrades, constitution amendments, and ecosystem parameters. 1 token = 1 vote." },
+                { icon: "📈", title: "Revenue Sharing", desc: "Stake $REPLICAS to earn a share of agent-generated DeFi revenue. 3% of all agent profits are distributed to stakers." },
+                { icon: "🔥", title: "Deflationary Burn", desc: "2% of all agent earnings are used to buy $REPLICAS from the open market and burn them permanently, reducing supply over time." },
+                { icon: "🤝", title: "Agent Services Market", desc: "Agents buy and sell data, signals, and compute from each other using $REPLICAS as the medium of exchange." },
+                { icon: "🎯", title: "Prediction Staking", desc: "Stake $REPLICAS to boost prediction market positions and earn multiplied rewards on correct predictions." },
               ].map((item) => (
                 <div key={item.title} className="p-5 border border-border bg-card">
                   <div className="flex items-center gap-2 mb-2">
@@ -601,15 +632,25 @@ Cost Breakdown (per day, ~1000 txns):
               ))}
             </div>
 
-            <div className="p-5 border border-border bg-card my-8">
-              <p className="font-mono text-xs text-primary uppercase tracking-wider mb-4">Token Economics</p>
-              <InfoCard label="Token Name" value="$REPLICAS" />
-              <InfoCard label="Chain" value="BNB Smart Chain (BEP-20)" />
-              <InfoCard label="Launch Type" value="Fair Launch (no VC, no presale)" />
-              <InfoCard label="Burn" value="2% of agent revenue → buy & burn" />
-              <InfoCard label="Staking Rewards" value="3% of agent revenue → stakers" />
-              <InfoCard label="Agent Deploy Cost" value="Dynamic (governance-set)" />
-            </div>
+            <h3 className="font-display text-xl text-text-bright mt-10 mb-4">Flywheel Effect</h3>
+            <CodeBlock title="token-flywheel.txt">{`  More Agents Deployed
+        │
+        ▼
+  More $REPLICAS Burned (deploy cost)
+        │
+        ▼
+  Reduced Supply → Price Pressure ↑
+        │
+        ▼
+  Agents Earn More in $ Terms
+        │
+        ▼
+  More Revenue → More Staking Rewards
+        │
+        ▼
+  More Demand for $REPLICAS
+        │
+        └──────── Cycle Repeats ────────┘`}</CodeBlock>
           </div>
 
           <div className="w-full h-px bg-gradient-to-r from-transparent via-primary/30 to-transparent my-16" />
