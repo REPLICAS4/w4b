@@ -1,11 +1,14 @@
 import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { motion } from "framer-motion";
+import { useAuth } from "@/contexts/AuthContext";
 import WaitlistModal from "./WaitlistModal";
+import { LogOut } from "lucide-react";
 
 const Navbar = () => {
   const [waitlistOpen, setWaitlistOpen] = useState(false);
   const location = useLocation();
+  const { user, signOut } = useAuth();
 
   const links = [
     { to: "/", label: "Home" },
@@ -13,6 +16,10 @@ const Navbar = () => {
     { to: "/predictmarket", label: "Predict Market" },
     { to: "/docs", label: "Docs" },
   ];
+
+  if (user) {
+    links.push({ to: "/my-replicas", label: "My Replicas" });
+  }
 
   return (
     <>
@@ -50,12 +57,22 @@ const Navbar = () => {
             >
               OPEN-SOURCE
             </a>
-            <button
-              onClick={() => setWaitlistOpen(true)}
-              className="font-mono text-xs tracking-wider px-4 py-1.5 border border-primary text-primary hover:bg-primary hover:text-primary-foreground transition-all duration-300"
-            >
-              TRY NOW →
-            </button>
+            {user ? (
+              <button
+                onClick={signOut}
+                className="font-mono text-xs tracking-wider px-4 py-1.5 border border-border text-muted-foreground hover:text-destructive hover:border-destructive transition-all duration-300 flex items-center gap-1.5"
+              >
+                <LogOut className="w-3 h-3" />
+                SIGN OUT
+              </button>
+            ) : (
+              <Link
+                to="/auth"
+                className="font-mono text-xs tracking-wider px-4 py-1.5 border border-primary text-primary hover:bg-primary hover:text-primary-foreground transition-all duration-300"
+              >
+                SIGN IN →
+              </Link>
+            )}
           </div>
         </nav>
       </motion.header>
