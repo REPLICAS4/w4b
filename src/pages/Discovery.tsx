@@ -28,11 +28,6 @@ const Discovery = () => {
   const [cloning, setCloning] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!authLoading && !user) navigate("/auth");
-  }, [user, authLoading, navigate]);
-
-  useEffect(() => {
-    if (!user) return;
     const fetch = async () => {
       const { data, error } = await supabase
         .from("replicas")
@@ -42,10 +37,10 @@ const Discovery = () => {
       setLoading(false);
     };
     fetch();
-  }, [user]);
+  }, []);
 
   const handleClone = async (replica: Replica) => {
-    if (!user) return;
+    if (!user) { navigate("/auth"); return; }
     setCloning(replica.id);
     // Fetch full replica data
     const { data: full, error: fetchErr } = await supabase
@@ -158,12 +153,13 @@ const Discovery = () => {
                     size="sm"
                     variant="outline"
                     className="flex-1 font-mono text-[11px] tracking-wider"
-                    asChild
+                    onClick={() => {
+                      if (!user) { navigate("/auth"); return; }
+                      navigate(`/chat/${r.id}`);
+                    }}
                   >
-                    <Link to={`/chat/${r.id}`}>
-                      <MessageSquare className="w-3 h-3 mr-1" />
-                      CHAT
-                    </Link>
+                    <MessageSquare className="w-3 h-3 mr-1" />
+                    CHAT
                   </Button>
                   <Button
                     size="sm"
