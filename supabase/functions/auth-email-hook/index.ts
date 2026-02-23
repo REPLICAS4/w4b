@@ -35,7 +35,7 @@ const EMAIL_TEMPLATES: Record<string, React.ComponentType<any>> = {
 }
 
 // Configuration
-const SITE_NAME = "w4b"
+const SITE_NAME = "Replicas Service"
 const SENDER_DOMAIN = "notify.replicas4.com"
 const ROOT_DOMAIN = "replicas4.com"
 const FROM_DOMAIN = "notify.replicas4.com" // Domain shown in From address (may be root or sender subdomain)
