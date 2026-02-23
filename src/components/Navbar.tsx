@@ -12,7 +12,7 @@ const Navbar = () => {
 
   const links = [
     { to: "/", label: "Home" },
-    { to: "/create-replicas", label: "Create Replicas" },
+    { to: "/create-replica", label: "Create Replica" },
     { to: "/predictmarket", label: "Predict Market" },
     { to: "/docs", label: "Docs" },
   ];

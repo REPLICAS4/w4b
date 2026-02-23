@@ -7,7 +7,7 @@ import { AuthProvider } from "@/contexts/AuthContext";
 import Index from "./pages/Index";
 import PredictMarket from "./pages/PredictMarket";
 import Docs from "./pages/Docs";
-import CreateReplicas from "./pages/CreateReplicas";
+
 import Auth from "./pages/Auth";
 import CreateReplicaForm from "./pages/CreateReplicaForm";
 import MyReplicas from "./pages/MyReplicas";
@@ -26,7 +26,7 @@ const App = () => (
             <Route path="/" element={<Index />} />
             <Route path="/predictmarket" element={<PredictMarket />} />
             <Route path="/docs" element={<Docs />} />
-            <Route path="/create-replicas" element={<CreateReplicas />} />
+            
             <Route path="/auth" element={<Auth />} />
             <Route path="/create-replica" element={<CreateReplicaForm />} />
             <Route path="/my-replicas" element={<MyReplicas />} />
