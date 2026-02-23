@@ -11,6 +11,8 @@ import Docs from "./pages/Docs";
 import Auth from "./pages/Auth";
 import CreateReplicaForm from "./pages/CreateReplicaForm";
 import MyReplicas from "./pages/MyReplicas";
+import Discovery from "./pages/Discovery";
+import ChatReplica from "./pages/ChatReplica";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -30,6 +32,8 @@ const App = () => (
             <Route path="/auth" element={<Auth />} />
             <Route path="/create-replica" element={<CreateReplicaForm />} />
             <Route path="/my-replicas" element={<MyReplicas />} />
+            <Route path="/discovery" element={<Discovery />} />
+            <Route path="/chat/:id" element={<ChatReplica />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
