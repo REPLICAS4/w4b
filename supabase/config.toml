@@ -3,3 +3,7 @@ project_id = "zteflwjpnjongfiwjgiy"
 [functions]
   [functions.auth-email-hook]
     verify_jwt = false
+  [functions.fetch-trending-bsc]
+    verify_jwt = false
+  [functions.analyze-token]
+    verify_jwt = false

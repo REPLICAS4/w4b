@@ -6,6 +6,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/contexts/AuthContext";
 import Index from "./pages/Index";
 import PredictMarket from "./pages/PredictMarket";
+import DegenTrading from "./pages/DegenTrading";
 import Docs from "./pages/Docs";
 
 import Auth from "./pages/Auth";
@@ -29,6 +30,7 @@ const App = () => (
             <Route path="/" element={<Index />} />
             <Route path="/predictmarket" element={<PredictMarket />} />
             <Route path="/docs" element={<Docs />} />
+            <Route path="/degen" element={<DegenTrading />} />
             
             <Route path="/auth" element={<Auth />} />
             <Route path="/create-replica" element={<CreateReplicaForm />} />

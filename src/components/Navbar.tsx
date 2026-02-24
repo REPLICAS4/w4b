@@ -25,6 +25,7 @@ const Navbar = () => {
     { to: "/discovery", label: "Discovery" },
     { to: "/create-replica", label: "Create Replica" },
     { to: "/predictmarket", label: "Predict Market" },
+    { to: "/degen", label: "Degen" },
     { to: "/docs", label: "Docs" },
   ];
 
