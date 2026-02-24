@@ -6,103 +6,99 @@ const corsHeaders = {
     "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
-interface DexToken {
-  url?: string;
-  chainId?: string;
-  tokenAddress?: string;
-  icon?: string;
-  header?: string;
-  description?: string;
-  name?: string;
-  symbol?: string;
-}
-
 interface DexPair {
   chainId?: string;
   pairAddress?: string;
   baseToken?: { address?: string; name?: string; symbol?: string };
   quoteToken?: { address?: string; name?: string; symbol?: string };
   priceUsd?: string;
-  priceChange?: { h24?: number };
+  priceChange?: { h24?: number; h6?: number; h1?: number };
   volume?: { h24?: number };
   liquidity?: { usd?: number };
   fdv?: number;
   marketCap?: number;
   info?: { imageUrl?: string };
   url?: string;
+  txns?: { h24?: { buys?: number; sells?: number } };
 }
 
 serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
   try {
-    // Fetch top boosted tokens
-    const boostRes = await fetch("https://api.dexscreener.com/token-boosts/top/v1");
-    const boostData: DexToken[] = await boostRes.json();
+    // Multiple search queries to get diverse BSC tokens
+    const queries = ["BSC", "BNB", "pancakeswap", "doge", "pepe", "shib", "floki", "baby"];
+    
+    const fetchPromises = queries.map((q) =>
+      fetch(`https://api.dexscreener.com/latest/dex/search?q=${q}`)
+        .then((r) => r.json())
+        .then((d) => (d.pairs || []) as DexPair[])
+        .catch(() => [] as DexPair[])
+    );
 
-    // Filter BSC tokens
-    const bscTokens = (boostData || []).filter((t) => t.chainId === "bsc");
+    // Also fetch top boosted tokens
+    const boostPromise = fetch("https://api.dexscreener.com/token-boosts/top/v1")
+      .then((r) => r.json())
+      .catch(() => []);
 
-    // Get unique token addresses
-    const addresses = [...new Set(bscTokens.map((t) => t.tokenAddress).filter(Boolean))];
+    const [boostData, ...searchResults] = await Promise.all([boostPromise, ...fetchPromises]);
 
-    if (addresses.length === 0) {
-      // Fallback: search for meme tokens on BSC
-      const searchRes = await fetch("https://api.dexscreener.com/latest/dex/search?q=meme");
-      const searchData = await searchRes.json();
-      const bscPairs: DexPair[] = (searchData.pairs || [])
-        .filter((p: DexPair) => p.chainId === "bsc")
-        .slice(0, 20);
+    // Collect all BSC pairs from searches
+    const allBscPairs: DexPair[] = searchResults
+      .flat()
+      .filter((p) => p.chainId === "bsc");
 
-      const tokens = bscPairs.map((p) => ({
-        name: p.baseToken?.name || "Unknown",
-        symbol: p.baseToken?.symbol || "???",
-        address: p.baseToken?.address || "",
-        pairAddress: p.pairAddress || "",
-        price: p.priceUsd || "0",
-        priceChange24h: p.priceChange?.h24 || 0,
-        volume24h: p.volume?.h24 || 0,
-        liquidity: p.liquidity?.usd || 0,
-        marketCap: p.marketCap || p.fdv || 0,
-        logo: p.info?.imageUrl || null,
-        dexUrl: p.url || `https://dexscreener.com/bsc/${p.pairAddress}`,
-      }));
-
-      return new Response(JSON.stringify({ tokens, source: "search" }), {
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
+    // If we have boosted BSC tokens, fetch their pair data too
+    const boostedBsc = (Array.isArray(boostData) ? boostData : []).filter(
+      (t: any) => t.chainId === "bsc" && t.tokenAddress
+    );
+    if (boostedBsc.length > 0) {
+      const addrs = [...new Set(boostedBsc.map((t: any) => t.tokenAddress))].slice(0, 30);
+      try {
+        const pairRes = await fetch(`https://api.dexscreener.com/tokens/v1/bsc/${addrs.join(",")}`);
+        const pairData: DexPair[] = await pairRes.json();
+        if (Array.isArray(pairData)) {
+          allBscPairs.push(...pairData.filter((p) => p.chainId === "bsc"));
+        }
+      } catch {}
     }
 
-    // Fetch pair data for boosted BSC tokens (batch up to 30)
-    const batchAddresses = addresses.slice(0, 30).join(",");
-    const pairRes = await fetch(`https://api.dexscreener.com/tokens/v1/bsc/${batchAddresses}`);
-    const pairData: DexPair[] = await pairRes.json();
+    // Deduplicate by base token address, keep the pair with highest volume
+    const tokenMap = new Map<string, DexPair>();
+    for (const p of allBscPairs) {
+      const addr = p.baseToken?.address?.toLowerCase();
+      if (!addr) continue;
+      const existing = tokenMap.get(addr);
+      if (!existing || (p.volume?.h24 || 0) > (existing.volume?.h24 || 0)) {
+        tokenMap.set(addr, p);
+      }
+    }
 
-    // Build token list from pair data, deduplicate by base token address
-    const seen = new Set<string>();
-    const tokens = (pairData || [])
-      .filter((p) => {
-        const addr = p.baseToken?.address?.toLowerCase();
-        if (!addr || seen.has(addr)) return false;
-        seen.add(addr);
-        return true;
-      })
-      .slice(0, 20)
-      .map((p) => ({
-        name: p.baseToken?.name || "Unknown",
-        symbol: p.baseToken?.symbol || "???",
-        address: p.baseToken?.address || "",
-        pairAddress: p.pairAddress || "",
-        price: p.priceUsd || "0",
-        priceChange24h: p.priceChange?.h24 || 0,
-        volume24h: p.volume?.h24 || 0,
-        liquidity: p.liquidity?.usd || 0,
-        marketCap: p.marketCap || p.fdv || 0,
-        logo: p.info?.imageUrl || bscTokens.find((t) => t.tokenAddress?.toLowerCase() === p.baseToken?.address?.toLowerCase())?.icon || null,
-        dexUrl: p.url || `https://dexscreener.com/bsc/${p.pairAddress}`,
-      }));
+    // Sort by 24h volume descending, take top 30
+    const sorted = [...tokenMap.values()]
+      .filter((p) => (p.volume?.h24 || 0) > 100) // min $100 volume
+      .sort((a, b) => (b.volume?.h24 || 0) - (a.volume?.h24 || 0))
+      .slice(0, 30);
 
-    return new Response(JSON.stringify({ tokens, source: "boosted" }), {
+    const tokens = sorted.map((p) => ({
+      name: p.baseToken?.name || "Unknown",
+      symbol: p.baseToken?.symbol || "???",
+      address: p.baseToken?.address || "",
+      pairAddress: p.pairAddress || "",
+      price: p.priceUsd || "0",
+      priceChange24h: p.priceChange?.h24 || 0,
+      priceChange6h: p.priceChange?.h6 || 0,
+      priceChange1h: p.priceChange?.h1 || 0,
+      volume24h: p.volume?.h24 || 0,
+      liquidity: p.liquidity?.usd || 0,
+      marketCap: p.marketCap || p.fdv || 0,
+      logo: p.info?.imageUrl || null,
+      dexUrl: p.url || `https://dexscreener.com/bsc/${p.pairAddress}`,
+      buys24h: p.txns?.h24?.buys || 0,
+      sells24h: p.txns?.h24?.sells || 0,
+    }));
+
+    return new Response(JSON.stringify({ tokens, count: tokens.length }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   } catch (e) {
