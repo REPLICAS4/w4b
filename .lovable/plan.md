@@ -1,116 +1,114 @@
 
 
-# REPLICAS -- Product Audit and Next Steps
+# Degen Trading on BSC -- Meme Token Scanner + AI Analysis
 
-## Current State Summary
+## Overview
 
-Here is what exists today across all pages and backend:
+Add a new **Degen Trading** page at `/degen` where replicas automatically fetch trending meme tokens on BSC from DexScreener's public API, then use AI (via Lovable AI) to analyze, score, and predict each token. Users can view live trending tokens, get AI-powered insights, and see trade recommendations.
 
-### Pages
-| Page | Route | Status | Notes |
-|------|-------|--------|-------|
-| Landing | `/` | Done | Hero, demo slideshow, manifesto, terminal demo, FAQ, footer |
-| Discovery | `/discovery` | Done | Public browsing, auth-gated chat/clone |
-| Create Replica | `/create-replica` | Done | Drag-and-drop form, avatar upload, 5 LLM models |
-| My Replicas | `/my-replicas` | Done | List + delete (auth required) |
-| Chat | `/chat/:id` | Done | Streaming AI chat via edge function |
-| Predict Market | `/predictmarket` | Done | Showcase page (charts, strategy, stats -- static/demo) |
-| Docs | `/docs` | Done | 11-section documentation with sidebar |
-| Auth | `/auth` | Done | Email/password sign-up and sign-in |
+## Architecture
 
-### Database
-| Table | Columns | RLS |
-|-------|---------|-----|
-| `profiles` | id, display_name, avatar_url, created_at, updated_at | Own profile only (select/insert/update) |
-| `replicas` | id, owner_id, name, description, avatar_url, instruction, knowledge, model, created_at, updated_at | Public read, owner-only insert/update/delete |
+```text
++------------------+       +---------------------+       +-------------------+
+|  /degen page     | ----> | Edge Function:       | ----> | DexScreener API   |
+|  (React frontend)|       | fetch-trending-bsc   |       | (public, no key)  |
++------------------+       +---------------------+       +-------------------+
+        |                          |
+        |                          v
+        |                  +---------------------+
+        |                  | Edge Function:       |
+        +----------------> | analyze-token        | ----> Lovable AI (Gemini)
+                           +---------------------+
+```
 
-### Backend
-- `auth-email-hook` edge function (branded emails)
-- `chat-replica` edge function (streaming AI chat via Lovable AI gateway)
-- `avatars` storage bucket (public)
+DexScreener has a **free public API** (no API key needed, rate-limited to 300 req/min). We'll proxy through edge functions to avoid CORS issues and add AI analysis.
 
-### Gaps and Issues Found
-1. **My Replicas** fetches ALL replicas, not just the user's own -- missing `.eq("owner_id", user.id)` filter
-2. **No edit functionality** for replicas -- only create and delete
-3. **Navbar not mobile responsive** -- all links overflow on small screens
-4. **No profile page** -- profiles table exists but users can't edit display_name or avatar
-5. **Chat history not persisted** -- messages are lost on page refresh
-6. **No creator info on Discovery cards** -- no way to see who made a replica
+## What Gets Built
 
----
+### 1. Edge Function: `fetch-trending-bsc`
+Fetches trending/top meme tokens on BSC from DexScreener API:
+- `GET https://api.dexscreener.com/token-boosts/top/v1` -- top boosted tokens
+- Filter to `chainId === "bsc"` only
+- Also fetch pair data: `GET https://api.dexscreener.com/latest/dex/search?q=meme` filtered to BSC
+- Returns: token name, symbol, price, 24h change, volume, liquidity, market cap, pair address, logo
 
-## Recommended Next Steps (Priority Order)
+### 2. Edge Function: `analyze-token`
+Takes a token's market data and uses Lovable AI (Gemini Flash) to generate:
+- **Risk score** (1-10, 10 = extremely risky)
+- **Degen score** (1-10, 10 = maximum degen potential)
+- **Short analysis** (2-3 sentences on why buy/avoid)
+- **Prediction** (bullish/bearish/neutral for next 24h)
+- **Key signals** (liquidity locked?, honeypot risk, volume trend)
 
-### 1. Fix My Replicas Bug (Critical)
-The My Replicas page loads ALL replicas instead of only the current user's. Add `.eq("owner_id", user.id)` to the query.
+### 3. New Page: `/degen` -- Degen Trading Dashboard
+Sections on the page:
 
-**Files:** `src/pages/MyReplicas.tsx`
+**a) Hero Section** -- "Degen Scanner" branding with BSC logo, live pulse indicator
 
----
+**b) Trending Meme Tokens Table** -- Live table showing:
+| Token | Price | 24h % | Volume | Liquidity | Degen Score | Action |
+Each row is clickable to expand AI analysis
 
-### 2. Mobile-Responsive Navbar
-Add a hamburger menu for mobile devices. Currently the navbar overflows on smaller screens.
+**c) AI Analysis Panel** -- When a token is selected:
+- Risk/Degen score gauges
+- AI-generated insight text
+- Bullish/Bearish prediction badge
+- Key signals (liquidity, honeypot check, volume trend)
+- Link to DexScreener for the pair
 
-**Files:** `src/components/Navbar.tsx`
+**d) Agent Thinking Terminal** -- Reuse the existing terminal animation pattern to show the AI "thinking" while analyzing a token
 
----
+### 4. Navigation
+- Add "Degen" link to the Navbar
 
-### 3. Edit Replica
-Allow users to edit their own replicas from the My Replicas page -- update name, description, instruction, knowledge, model, and avatar.
+## Database
 
-**Files:** `src/pages/MyReplicas.tsx` (add edit button + modal or navigate to edit page)
-
----
-
-### 4. User Profile Page
-Create a `/profile` page where users can set their display name and avatar. This info can then be shown on their public replicas in Discovery.
-
-**Files:** New `src/pages/Profile.tsx`, update `src/App.tsx` and `src/components/Navbar.tsx`
-
----
-
-### 5. Show Creator Info on Discovery Cards
-Join `profiles` on `owner_id` to show the creator's display name on each replica card. Requires updating the profiles RLS to allow public read of display_name.
-
-**Files:** `src/pages/Discovery.tsx`, new DB migration for profiles public read policy
-
----
-
-### 6. Persist Chat History
-Create a `chat_messages` table to save conversations. Users can resume chats and see past conversations.
-
-**Files:** New DB migration, update `src/pages/ChatReplica.tsx`, new `src/pages/ChatHistory.tsx`
-
----
+**No new tables needed** for the initial version. This is a real-time scanner -- data is fetched live from DexScreener and analyzed on-the-fly. A future iteration could add a `watchlist` table or `trade_signals` table.
 
 ## Technical Details
 
-### Fix #1 -- My Replicas Query
-```typescript
-// In MyReplicas.tsx, line 36, add filter:
-.eq("owner_id", user.id)
-```
+### Edge Function: `fetch-trending-bsc/index.ts`
+- Calls DexScreener public endpoints (no API key)
+- Filters results to BSC chain only
+- Enriches with pair data (price, volume, liquidity)
+- Returns top 20 trending BSC meme tokens
+- CORS headers included
 
-### Fix #2 -- Mobile Navbar
-- Add a `Sheet` (drawer) component triggered by a hamburger icon on `md:` breakpoint and below
-- Hide desktop links on mobile, show hamburger instead
+### Edge Function: `analyze-token/index.ts`
+- Receives token data (name, price, volume, liquidity, price change)
+- Calls Lovable AI (Gemini Flash) with a structured prompt
+- Returns JSON with risk_score, degen_score, analysis, prediction, signals
+- Uses the same AI gateway pattern as `chat-replica`
 
-### Feature #3 -- Edit Replica
-- Add an "Edit" button to each card in My Replicas
-- Reuse the same form fields from CreateReplicaForm in a dialog or separate `/edit-replica/:id` route
-- Use `supabase.from("replicas").update(...)` with the existing RLS update policy
+### Frontend Components (all in `src/components/degen/`)
+- `DegenHero.tsx` -- Page hero with scanner branding
+- `TrendingTokensTable.tsx` -- Live table of trending BSC meme tokens with auto-refresh
+- `TokenAnalysisPanel.tsx` -- AI analysis display for selected token
+- `DegenScoreGauge.tsx` -- Visual gauge component for risk/degen scores
+- `TokenRow.tsx` -- Individual token row with expand/collapse for analysis
 
-### Feature #4 -- Profile Page
-- New page at `/profile` reading from `profiles` table
-- Allow updating `display_name` and `avatar_url` (reuse avatar upload logic)
+### Page: `src/pages/DegenTrading.tsx`
+- Composes all degen components
+- Manages selected token state
+- Auto-refreshes trending data every 30 seconds
 
-### Feature #5 -- Creator Display
-- New RLS policy: `"Anyone can view profile display_name"` on profiles for SELECT
-- Update Discovery query to join profiles: `.select("*, profiles!owner_id(display_name, avatar_url)")`
+### Files to Create
+1. `supabase/functions/fetch-trending-bsc/index.ts`
+2. `supabase/functions/analyze-token/index.ts`
+3. `src/pages/DegenTrading.tsx`
+4. `src/components/degen/DegenHero.tsx`
+5. `src/components/degen/TrendingTokensTable.tsx`
+6. `src/components/degen/TokenAnalysisPanel.tsx`
+7. `src/components/degen/DegenScoreGauge.tsx`
 
-### Feature #6 -- Chat Persistence
-- New `chat_messages` table: `id, replica_id, user_id, role, content, created_at`
-- RLS: users can read/write only their own messages
-- Load existing messages on chat page mount
-- Save each message after send/receive
+### Files to Edit
+1. `src/App.tsx` -- add `/degen` route
+2. `src/components/Navbar.tsx` -- add "Degen" link
+3. `supabase/config.toml` -- add `verify_jwt = false` for new functions
+
+## Implementation Order
+1. Create both edge functions and deploy
+2. Build frontend components
+3. Wire up the page and add routing
+4. Test end-to-end
 
