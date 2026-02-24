@@ -16,6 +16,7 @@ interface Replica {
   model: string;
   owner_id: string;
   created_at: string;
+  profiles: { display_name: string | null; avatar_url: string | null } | null;
 }
 
 const Discovery = () => {
@@ -31,9 +32,9 @@ const Discovery = () => {
     const fetch = async () => {
       const { data, error } = await supabase
         .from("replicas")
-        .select("id, name, description, avatar_url, model, owner_id, created_at")
+        .select("id, name, description, avatar_url, model, owner_id, created_at, profiles!replicas_owner_id_fkey(display_name, avatar_url)")
         .order("created_at", { ascending: false });
-      if (!error) setReplicas(data || []);
+      if (!error) setReplicas((data as unknown as Replica[]) || []);
       setLoading(false);
     };
     fetch();
@@ -42,7 +43,6 @@ const Discovery = () => {
   const handleClone = async (replica: Replica) => {
     if (!user) { navigate("/auth"); return; }
     setCloning(replica.id);
-    // Fetch full replica data
     const { data: full, error: fetchErr } = await supabase
       .from("replicas")
       .select("*")
@@ -123,7 +123,7 @@ const Discovery = () => {
                 key={r.id}
                 className="group border border-border rounded-lg p-5 bg-card/50 hover:border-primary/40 transition-all duration-300"
               >
-                <div className="flex items-start gap-3 mb-4">
+                <div className="flex items-start gap-3 mb-3">
                   {r.avatar_url ? (
                     <img
                       src={r.avatar_url}
@@ -147,6 +147,12 @@ const Discovery = () => {
                     </p>
                   </div>
                 </div>
+
+                {r.profiles?.display_name && (
+                  <p className="text-[10px] text-muted-foreground mb-3 font-mono">
+                    by {r.profiles.display_name}
+                  </p>
+                )}
 
                 <div className="flex gap-2">
                   <Button

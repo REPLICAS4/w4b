@@ -3,12 +3,22 @@ import { Link, useLocation } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useAuth } from "@/contexts/AuthContext";
 import WaitlistModal from "./WaitlistModal";
-import { LogOut } from "lucide-react";
+import { LogOut, Menu } from "lucide-react";
+import { useIsMobile } from "@/hooks/use-mobile";
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
 
 const Navbar = () => {
   const [waitlistOpen, setWaitlistOpen] = useState(false);
+  const [sheetOpen, setSheetOpen] = useState(false);
   const location = useLocation();
   const { user, signOut } = useAuth();
+  const isMobile = useIsMobile();
 
   const links = [
     { to: "/", label: "Home" },
@@ -20,7 +30,42 @@ const Navbar = () => {
 
   if (user) {
     links.push({ to: "/my-replicas", label: "My Replicas" });
+    links.push({ to: "/profile", label: "Profile" });
   }
+
+  const navLink = (link: { to: string; label: string }, onClick?: () => void) => (
+    <Link
+      key={link.to}
+      to={link.to}
+      onClick={onClick}
+      className={`font-mono text-xs tracking-wider transition-colors duration-200 ${
+        location.pathname === link.to
+          ? "text-primary"
+          : "text-muted-foreground hover:text-primary"
+      }`}
+    >
+      {link.label.toUpperCase()}
+    </Link>
+  );
+
+  const authButton = (onClick?: () => void) =>
+    user ? (
+      <button
+        onClick={() => { signOut(); onClick?.(); }}
+        className="font-mono text-xs tracking-wider px-4 py-1.5 border border-border text-muted-foreground hover:text-destructive hover:border-destructive transition-all duration-300 flex items-center gap-1.5"
+      >
+        <LogOut className="w-3 h-3" />
+        SIGN OUT
+      </button>
+    ) : (
+      <Link
+        to="/auth"
+        onClick={onClick}
+        className="font-mono text-xs tracking-wider px-4 py-1.5 border border-primary text-primary hover:bg-primary hover:text-primary-foreground transition-all duration-300"
+      >
+        SIGN IN →
+      </Link>
+    );
 
   return (
     <>
@@ -36,45 +81,47 @@ const Navbar = () => {
             REPLICAS
           </Link>
 
-          <div className="flex items-center gap-6">
-            {links.map((link) => (
-              <Link
-                key={link.to}
-                to={link.to}
-                className={`font-mono text-xs tracking-wider transition-colors duration-200 ${
-                  location.pathname === link.to
-                    ? "text-primary"
-                    : "text-muted-foreground hover:text-primary"
-                }`}
+          {isMobile ? (
+            <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
+              <SheetTrigger asChild>
+                <button className="p-2 text-muted-foreground hover:text-foreground transition-colors">
+                  <Menu className="w-5 h-5" />
+                </button>
+              </SheetTrigger>
+              <SheetContent side="right" className="w-64">
+                <SheetHeader>
+                  <SheetTitle className="font-display text-lg font-bold">REPLICAS</SheetTitle>
+                </SheetHeader>
+                <div className="flex flex-col gap-4 mt-6">
+                  {links.map((link) => navLink(link, () => setSheetOpen(false)))}
+                  <a
+                    href="https://github.com/REPLICAS4/w4b"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="font-mono text-xs tracking-wider text-muted-foreground hover:text-primary transition-colors duration-200"
+                  >
+                    OPEN-SOURCE
+                  </a>
+                  <div className="pt-2 border-t border-border">
+                    {authButton(() => setSheetOpen(false))}
+                  </div>
+                </div>
+              </SheetContent>
+            </Sheet>
+          ) : (
+            <div className="flex items-center gap-6">
+              {links.map((link) => navLink(link))}
+              <a
+                href="https://github.com/REPLICAS4/w4b"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="font-mono text-xs tracking-wider text-muted-foreground hover:text-primary transition-colors duration-200"
               >
-                {link.label.toUpperCase()}
-              </Link>
-            ))}
-            <a
-              href="https://github.com/REPLICAS4/w4b"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="font-mono text-xs tracking-wider text-muted-foreground hover:text-primary transition-colors duration-200"
-            >
-              OPEN-SOURCE
-            </a>
-            {user ? (
-              <button
-                onClick={signOut}
-                className="font-mono text-xs tracking-wider px-4 py-1.5 border border-border text-muted-foreground hover:text-destructive hover:border-destructive transition-all duration-300 flex items-center gap-1.5"
-              >
-                <LogOut className="w-3 h-3" />
-                SIGN OUT
-              </button>
-            ) : (
-              <Link
-                to="/auth"
-                className="font-mono text-xs tracking-wider px-4 py-1.5 border border-primary text-primary hover:bg-primary hover:text-primary-foreground transition-all duration-300"
-              >
-                SIGN IN →
-              </Link>
-            )}
-          </div>
+                OPEN-SOURCE
+              </a>
+              {authButton()}
+            </div>
+          )}
         </nav>
       </motion.header>
     </>
