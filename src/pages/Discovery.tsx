@@ -29,15 +29,33 @@ const Discovery = () => {
   const [cloning, setCloning] = useState<string | null>(null);
 
   useEffect(() => {
-    const fetch = async () => {
+    const fetchData = async () => {
       const { data, error } = await supabase
         .from("replicas")
-        .select("id, name, description, avatar_url, model, owner_id, created_at, profiles!replicas_owner_id_fkey(display_name, avatar_url)")
+        .select("id, name, description, avatar_url, model, owner_id, created_at")
         .order("created_at", { ascending: false });
-      if (!error) setReplicas((data as unknown as Replica[]) || []);
+      if (error || !data) { setLoading(false); return; }
+
+      // Fetch profiles for unique owner_ids
+      const ownerIds = [...new Set(data.map((r) => r.owner_id))];
+      const { data: profiles } = await supabase
+        .from("profiles")
+        .select("id, display_name, avatar_url")
+        .in("id", ownerIds);
+
+      const profileMap = new Map(
+        (profiles || []).map((p) => [p.id, { display_name: p.display_name, avatar_url: p.avatar_url }])
+      );
+
+      const enriched = data.map((r) => ({
+        ...r,
+        profiles: profileMap.get(r.owner_id) || null,
+      }));
+
+      setReplicas(enriched as Replica[]);
       setLoading(false);
     };
-    fetch();
+    fetchData();
   }, []);
 
   const handleClone = async (replica: Replica) => {
