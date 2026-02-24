@@ -5,13 +5,16 @@ import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import Navbar from "@/components/Navbar";
-import { Plus, Trash2, Brain } from "lucide-react";
+import EditReplicaDialog from "@/components/EditReplicaDialog";
+import { Plus, Trash2, Brain, Pencil } from "lucide-react";
 
 interface Replica {
   id: string;
   name: string;
   description: string | null;
   avatar_url: string | null;
+  instruction: string | null;
+  knowledge: string | null;
   model: string;
   created_at: string;
 }
@@ -22,11 +25,10 @@ const MyReplicas = () => {
   const { toast } = useToast();
   const [replicas, setReplicas] = useState<Replica[]>([]);
   const [loading, setLoading] = useState(true);
+  const [editReplica, setEditReplica] = useState<Replica | null>(null);
 
   useEffect(() => {
-    if (!authLoading && !user) {
-      navigate("/auth");
-    }
+    if (!authLoading && !user) navigate("/auth");
   }, [user, authLoading, navigate]);
 
   useEffect(() => {
@@ -34,7 +36,7 @@ const MyReplicas = () => {
     const fetchReplicas = async () => {
       const { data, error } = await supabase
         .from("replicas")
-        .select("id, name, description, avatar_url, model, created_at")
+        .select("id, name, description, avatar_url, instruction, knowledge, model, created_at")
         .eq("owner_id", user.id)
         .order("created_at", { ascending: false });
       if (error) {
@@ -107,18 +109,35 @@ const MyReplicas = () => {
                     <p className="text-[11px] text-muted-foreground mt-0.5 line-clamp-2">{r.description || "No description"}</p>
                     <p className="font-mono text-[10px] text-primary mt-1">{r.model.split("/")[1]}</p>
                   </div>
-                  <button
-                    onClick={() => handleDelete(r.id)}
-                    className="p-1.5 text-muted-foreground hover:text-destructive transition-colors flex-shrink-0"
-                  >
-                    <Trash2 className="w-4 h-4" />
-                  </button>
+                  <div className="flex gap-1 flex-shrink-0">
+                    <button
+                      onClick={() => setEditReplica(r)}
+                      className="p-1.5 text-muted-foreground hover:text-primary transition-colors"
+                    >
+                      <Pencil className="w-4 h-4" />
+                    </button>
+                    <button
+                      onClick={() => handleDelete(r.id)}
+                      className="p-1.5 text-muted-foreground hover:text-destructive transition-colors"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+                  </div>
                 </div>
               </div>
             ))}
           </div>
         )}
       </div>
+
+      <EditReplicaDialog
+        replica={editReplica}
+        open={!!editReplica}
+        onClose={() => setEditReplica(null)}
+        onSaved={(updated) => {
+          setReplicas((prev) => prev.map((r) => (r.id === updated.id ? { ...r, ...updated } : r)));
+        }}
+      />
     </div>
   );
 };

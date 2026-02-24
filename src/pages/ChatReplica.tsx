@@ -29,12 +29,14 @@ const ChatReplica = () => {
   const [messages, setMessages] = useState<Msg[]>([]);
   const [input, setInput] = useState("");
   const [streaming, setStreaming] = useState(false);
+  const [historyLoaded, setHistoryLoaded] = useState(false);
   const bottomRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (!authLoading && !user) navigate("/auth");
   }, [user, authLoading, navigate]);
 
+  // Load replica info
   useEffect(() => {
     if (!user || !id) return;
     supabase
@@ -52,9 +54,36 @@ const ChatReplica = () => {
       });
   }, [user, id, navigate, toast]);
 
+  // Load chat history
+  useEffect(() => {
+    if (!user || !id || historyLoaded) return;
+    supabase
+      .from("chat_messages")
+      .select("role, content")
+      .eq("replica_id", id)
+      .eq("user_id", user.id)
+      .order("created_at", { ascending: true })
+      .then(({ data }) => {
+        if (data && data.length > 0) {
+          setMessages(data as Msg[]);
+        }
+        setHistoryLoaded(true);
+      });
+  }, [user, id, historyLoaded]);
+
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
+
+  const saveMessage = async (msg: Msg) => {
+    if (!user || !id) return;
+    await supabase.from("chat_messages").insert({
+      replica_id: id,
+      user_id: user.id,
+      role: msg.role,
+      content: msg.content,
+    });
+  };
 
   const send = async () => {
     if (!input.trim() || streaming || !id) return;
@@ -63,6 +92,9 @@ const ChatReplica = () => {
     setMessages(newMessages);
     setInput("");
     setStreaming(true);
+
+    // Save user message
+    saveMessage(userMsg);
 
     let assistantSoFar = "";
 
@@ -124,6 +156,11 @@ const ChatReplica = () => {
             break;
           }
         }
+      }
+
+      // Save complete assistant message
+      if (assistantSoFar) {
+        saveMessage({ role: "assistant", content: assistantSoFar });
       }
     } catch (e) {
       console.error(e);
