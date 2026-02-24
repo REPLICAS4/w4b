@@ -35,6 +35,7 @@ const MyReplicas = () => {
       const { data, error } = await supabase
         .from("replicas")
         .select("id, name, description, avatar_url, model, created_at")
+        .eq("owner_id", user.id)
         .order("created_at", { ascending: false });
       if (error) {
         toast({ title: "Error loading replicas", description: error.message, variant: "destructive" });
