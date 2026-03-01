@@ -14,6 +14,7 @@ import CreateReplicaForm from "./pages/CreateReplicaForm";
 import MyReplicas from "./pages/MyReplicas";
 import Discovery from "./pages/Discovery";
 import ChatReplica from "./pages/ChatReplica";
+import ReliAgent from "./pages/ReliAgent";
 import Profile from "./pages/Profile";
 import NotFound from "./pages/NotFound";
 
@@ -37,6 +38,7 @@ const App = () => (
             <Route path="/my-replicas" element={<MyReplicas />} />
             <Route path="/discovery" element={<Discovery />} />
             <Route path="/profile" element={<Profile />} />
+            <Route path="/reli-agent" element={<ReliAgent />} />
             <Route path="/chat/:id" element={<ChatReplica />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
